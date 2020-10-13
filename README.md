@@ -47,7 +47,7 @@
 
 ### timer1: "The Ugly Way"
 
--   Do the above 5 times
+-   Do the above 5 times with different interval values
 
 <br>
 
@@ -81,19 +81,59 @@ Need to include the "Timer" library or module
 
 ### tween0: "The Simple Way"
 
+
 -   Lua Trick: Assign 2 values to two variables using a comma
 
         flappyX, flappyY = 0, VIRTUAL_HEIGHT / 2 - 8
+
 
 -   Make use of a timer and the ratio of (timer / MOVE_INTERVAL) to achieve  discrete but very accurate result of dividing steps within an interval period of time
 
         flappyX = math.min(endX, endX * (timer / MOVE_DURATION))
 
+
+### tween1: "A Better Way"
+
+
+-   Knife Library  
+
+    <img src="img/knifeModules.png" width="700">
+
+
+-   Again, put them all in table
+
+
+-   **Pseudocode:**
+    -   In love.load()
+        -   Create timer
+        -   Initiate empty flappy bird table
+        -   for x amount of times
+            -   Insert into table a bird with a random rate (see below for random rate)
+            -   Loop
+    -   In love.update(dt)
+        -   If timer less than TIMER_MAX
+            -   Update timer with dt
+            -   for each bird
+                -   Update position with the above (timer / rate) ratio
+
+
+-   For random floats in Lua and Love2d:
+
+        rate = math.random() + math.random(TIMER_MAX - 1)
+
+
+-   Stress test the game with love.timer.getFPS() and ramp up the number of flappy birds
+
+
+#### Results:  
+<img src="img/tween1.png" width="700">
+
+
+### tween2: "The Timer.tween Way"
+
 -   
 
 
-### tween1
-### tween2
 ### chain0
 ### chain1
 ### match-3
@@ -111,4 +151,5 @@ Final Submission:
 \-- Enter Description Here...
 
 ## Helpful Links:
-- [GitHub: Mastering Markdown](https://guides.github.com/features/mastering-markdown/)
+-   [Lua Knife](https://github.com/airstruck/knife)
+-   [GitHub: Mastering Markdown](https://guides.github.com/features/mastering-markdown/)
