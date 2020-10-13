@@ -1,12 +1,14 @@
 --[[
     GD50
-    timer1
+    timer2
 
     Example used to showcase a simple way of implementing a timer that affects
-    some output on the screen, but with more timers to illustrate scaling.
+    some output on the screen, but with the Timer class provided by the Knife
+    library to make our lives a whole lot easier.
 ]]
 
 push = require 'push'
+Timer = require 'knife.timer'
 
 VIRTUAL_WIDTH = 384
 VIRTUAL_HEIGHT = 216
@@ -15,16 +17,19 @@ WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 
 function love.load()
-    currentSecond = 0
-    secondTimer = 0
-    currentSecond2 = 0
-    secondTimer2 = 0
-    currentSecond3 = 0
-    secondTimer3 = 0
-    currentSecond4 = 0
-    secondTimer4 = 0
-    currentSecond5 = 0
-    secondTimer5 = 0
+    -- all of the intervals for our labels
+    intervals = {1, 2, 4, 3, 2}
+
+    -- all of the counters for our labels
+    counters = {0, 0, 0, 0, 0}
+
+    -- create Timer entries for each interval and counter
+    for i = 1, 5 do
+        -- anonymous function that gets called every intervals[i], in seconds
+        Timer.every(intervals[i], function()
+            counters[i] = counters[i] + 1
+        end)
+    end
 
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
@@ -46,53 +51,20 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
-    secondTimer = secondTimer + dt
-
-    if secondTimer > 1 then
-        currentSecond = currentSecond + 1
-        secondTimer = secondTimer % 1
-    end
-
-    secondTimer2 = secondTimer2 + dt
-
-    if secondTimer2 > 2 then
-        currentSecond2 = currentSecond2 + 1
-        secondTimer2 = secondTimer2 % 2
-    end
-
-    secondTimer3 = secondTimer3 + dt
-
-    if secondTimer3 > 4 then
-        currentSecond3 = currentSecond3 + 1
-        secondTimer3 = secondTimer3 % 4
-    end
-
-    secondTimer4 = secondTimer4 + dt
-
-    if secondTimer4 > 3 then
-        currentSecond4 = currentSecond4 + 1
-        secondTimer4 = secondTimer4 % 3
-    end
-
-    secondTimer5 = secondTimer5 + dt
-
-    if secondTimer5 > 2 then
-        currentSecond5 = currentSecond5 + 1
-        secondTimer5 = secondTimer5 % 2
-    end
+    -- perform the actual updates in the functions we passed in via Timer.every
+    Timer.update(dt)
 end
 
 function love.draw()
     push:start()
-    love.graphics.printf('Timer: ' .. tostring(currentSecond) .. ' seconds (every 1)',
-        0, 68, VIRTUAL_WIDTH, 'center')
-    love.graphics.printf('Timer: ' .. tostring(currentSecond2) .. ' seconds (every 2)',
-        0, 82, VIRTUAL_WIDTH, 'center')
-    love.graphics.printf('Timer: ' .. tostring(currentSecond3) .. ' seconds (every 4)',
-        0, 96, VIRTUAL_WIDTH, 'center')
-    love.graphics.printf('Timer: ' .. tostring(currentSecond4) .. ' seconds (every 3)',
-        0, 110, VIRTUAL_WIDTH, 'center')
-    love.graphics.printf('Timer: ' .. tostring(currentSecond5) .. ' seconds (every 2)',
-        0, 124, VIRTUAL_WIDTH, 'center')
+
+    -- "5" could be # of some table here for a real-world use case
+    for i = 1, 5 do
+        -- reference the counters and intervals table via i here, which is being
+        -- updated with the Timer library over time thanks to Timer.update
+        love.graphics.printf('Timer: ' .. tostring(counters[i]) .. ' seconds (every ' ..
+            tostring(intervals[i]) .. ')', 0, 54 + i * 16, VIRTUAL_WIDTH, 'center')
+    end
+
     push:finish()
 end
