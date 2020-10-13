@@ -1,12 +1,3 @@
---[[
-    GD50
-    timer2
-
-    Example used to showcase a simple way of implementing a timer that affects
-    some output on the screen, but with the Timer class provided by the Knife
-    library to make our lives a whole lot easier.
-]]
-
 push = require 'push'
 Timer = require 'knife.timer'
 

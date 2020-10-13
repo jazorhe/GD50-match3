@@ -25,22 +25,40 @@
 
 # Developing & Learning Notes:
 
--   ## timer0: "The Simple Way"
--   ## timer1: "The Ugly Way"
--   ## timer2: "The Clean Way"
+## timer0: "The Simple Way"
 
-    -   Timer.every(internal, callback)
-    -   Timer.after(interval, callback)
+-   Pseudocode:
+    -   In love.load()
+        -   Create timer variable
+        -   Create counter variable
+    -   In love.update(dt)
+        -   Increment timer variable by dt
+        -   If timer > 1
+            -   Increment counter by 1
+            -   Take remainers of timer
+        -   End if
+    -   In love.draw()
+        -   Render and print counter variable
 
--   ## chain0
--   ## chain1
--   ## match-3
--   ## swap0
--   ## swap1
--   ## swap2
--   ## tween0
--   ## tween1
--   ## tween2
+## timer1: "The Ugly Way"
+
+-   Do the above 5 times
+
+## timer2: "The Clean Way"
+
+-   Timer.every(internal, callback)
+-   Timer.after(interval, callback)
+
+
+## tween0: "The Simple Way"
+## tween1
+## tween2
+## chain0
+## chain1
+## match-3
+## swap0
+## swap1
+## swap2
 
 # Assignment 3
 
