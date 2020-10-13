@@ -62,13 +62,13 @@ Need to include the "Timer" library or module
         -   Create table of counters
         -   for each interval value in table
             -   Timer.every() increment counter at same index
-            -   loop
+        -   Loop
     -   In love.update(dt)
         -   Do nothing
     -   In love.draw()
         -   for each counter value in table
             -   draw
-            -   loop
+        -   Loop
 
 
 #### Results:
@@ -106,12 +106,13 @@ Need to include the "Timer" library or module
         -   Initiate empty flappy bird table
         -   for x amount of times
             -   Insert into table a bird with a random rate (see below for random rate)
-            -   Loop
+        -   Loop
     -   In love.update(dt)
         -   If timer less than TIMER_MAX
             -   Update timer with dt
             -   for each bird
                 -   Update position with the above (timer / rate) ratio
+            -   Loop
 
 
 -   For random floats in Lua and Love2d:
@@ -193,12 +194,42 @@ Need to include the "Timer" library or module
 
 -   
 
-### chain0
+### chain0: "The Simple (and Hard... and Ugly) Way"
+Concept of chaining things together, for instance where you have a cutscene with a character walk from point to point, talk to someone, with dialogue box, then do something else... These are consecutive, predetermind chain of events/actions to be performed by the game.
+
+-   **Pseudocode:**
+    -   In love.laod()
+        -   Initial position as base position
+        -   Create timer
+        -   Table of destinations
+        -   for each destinations in table
+            -   Add a reached key
+        -   Loop
+    -   In love.update(dt)
+        -   Increment timer
+        -   for each destination in table
+            - if nor reached
+                -   Use base position for transitional movement (tweening)
+                -   if at max time
+                    -   Flag destination reached
+                    -   Set current Position as base position
+                    -   Reset timer
+                -   end if
+                -   break to next destination
+            -   end if
+        -   Loop
+
+
+-   Trick for never going over the max time
+
+        timer = math.min(MOVEMENT_TIME, timer + dt)
+
+
 ### chain1
-### match-3
 ### swap0
 ### swap1
 ### swap2
+### match-3
 
 
 # Assignment 3

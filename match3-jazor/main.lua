@@ -1,16 +1,12 @@
 --[[
     GD50
-    tween2
+    chain0
 
-    Example used to showcase a simple way of "tweening" (interpolating) some value
-    over a period of time, in this case by moving Flappy Bird across the screen,
-    horizontally. This example instantiates a large number of birds all moving at
-    different rates to show a slightly better example than before but uses
-    Timer.tween to do it; it also tweens their opacity.
+    Example used to showcase a simple way of moving something from point to point
+    over time in some order, effectively "chaining" the steps.
 ]]
 
 push = require 'push'
-Timer = require 'knife.timer'
 
 VIRTUAL_WIDTH = 384
 VIRTUAL_HEIGHT = 216
@@ -18,44 +14,33 @@ VIRTUAL_HEIGHT = 216
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 
--- longest possible movement duration
-TIMER_MAX = 10
+-- seconds it takes to move each step
+MOVEMENT_TIME = 2
 
 function love.load()
+    -- create flappy sprite and set it to 0, 0; top-left
     flappySprite = love.graphics.newImage('flappy.png')
 
-    -- table of birds with random movement rates and Y positions
-    birds = {}
+    -- current X and Y of flappy
+    flappyX, flappyY = 0, 0
 
-    -- create 1000 random birds
-    for i = 1, 1000 do
-        table.insert(birds, {
-            -- all start at left side
-            x = 0,
+    -- base from which we will interpolate flappy, changed every point
+    baseX, baseY = flappyX, flappyY
 
-            -- random Y position within screen boundaries
-            y = math.random(VIRTUAL_HEIGHT - 24),
+    -- keeps track of movement time
+    timer = 0
 
-            -- random rate between half a second and our max, floating point
-            -- math.random() by itself will generate a random float between 0 and 1,
-            -- so we add that to math.random(max) to get a number between 0 and 10,
-            -- floating-point
-            rate = math.random() + math.random(TIMER_MAX - 1),
+    -- our four destinations in order, stored as X,Y coordinates
+    destinations = {
+        [1] = {x = VIRTUAL_WIDTH - flappySprite:getWidth(), y = 0},
+        [2] = {x = VIRTUAL_WIDTH - flappySprite:getWidth(), y = VIRTUAL_HEIGHT - flappySprite:getHeight()},
+        [3] = {x = 0, y = VIRTUAL_HEIGHT - flappySprite:getHeight()},
+        [4] = {x = 0, y = 0}
+    }
 
-            -- start with an opacity of 0 and fade to 255 over duration as well
-            opacity = 0
-        })
-    end
-
-    -- end X position for our interpolations
-    endX = VIRTUAL_WIDTH - flappySprite:getWidth()
-
-    -- iterate over all birds and tween to the endX location
-    for k, bird in pairs(birds) do
-        Timer.tween(bird.rate, {
-            -- tween bird's X to endX over bird.rate seconds
-            [bird] = { x = endX, opacity = 255 }
-        })
+    -- add a false "reached" flag to each destination
+    for k, destination in pairs(destinations) do
+        destination.reached = false
     end
 
     love.graphics.setDefaultFilter('nearest', 'nearest')
@@ -78,17 +63,34 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
-    Timer.update(dt)
+    timer = math.min(MOVEMENT_TIME, timer + dt)
+
+    for i, destination in ipairs(destinations) do
+        if not destination.reached then
+            flappyX, flappyY =
+                -- add the difference of the destination and base point of the
+                -- current interpolation, multiplied by the ratio of time / duration,
+                -- which performs a linear interpolation across any two values, negative
+                -- or positive
+                baseX + (destination.x - baseX) * timer / MOVEMENT_TIME,
+                baseY + (destination.y - baseY) * timer / MOVEMENT_TIME
+
+            -- flag destination as reached if we've reached the movement time and set the
+            -- base point as the new current point
+            if timer == MOVEMENT_TIME then
+                destination.reached = true
+                baseX, baseY = destination.x, destination.y
+                timer = 0
+            end
+
+            -- only need to calculate first unreached destination we iterate over
+            break
+        end
+    end
 end
 
 function love.draw()
     push:start()
-
-    -- iterate over bird table for drawing
-    for k, bird in pairs(birds) do
-        love.graphics.setColor(255, 255, 255, bird.opacity)
-        love.graphics.draw(flappySprite, bird.x, bird.y)
-    end
-
+    love.graphics.draw(flappySprite, flappyX, flappyY)
     push:finish()
 end
