@@ -1,14 +1,16 @@
 --[[
     GD50
-    tween1
+    tween2
 
     Example used to showcase a simple way of "tweening" (interpolating) some value
     over a period of time, in this case by moving Flappy Bird across the screen,
     horizontally. This example instantiates a large number of birds all moving at
-    different rates to show a slightly better example than before.
+    different rates to show a slightly better example than before but uses
+    Timer.tween to do it; it also tweens their opacity.
 ]]
 
 push = require 'push'
+Timer = require 'knife.timer'
 
 VIRTUAL_WIDTH = 384
 VIRTUAL_HEIGHT = 216
@@ -38,15 +40,23 @@ function love.load()
             -- math.random() by itself will generate a random float between 0 and 1,
             -- so we add that to math.random(max) to get a number between 0 and 10,
             -- floating-point
-            rate = math.random() + math.random(TIMER_MAX - 1)
+            rate = math.random() + math.random(TIMER_MAX - 1),
+
+            -- start with an opacity of 0 and fade to 255 over duration as well
+            opacity = 0
         })
     end
 
-    -- timer for interpolating the Y values
-    timer = 0
-
     -- end X position for our interpolations
     endX = VIRTUAL_WIDTH - flappySprite:getWidth()
+
+    -- iterate over all birds and tween to the endX location
+    for k, bird in pairs(birds) do
+        Timer.tween(bird.rate, {
+            -- tween bird's X to endX over bird.rate seconds
+            [bird] = { x = endX, opacity = 255 }
+        })
+    end
 
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
@@ -68,31 +78,17 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
-    -- only need to run this for max of
-    if timer < TIMER_MAX then
-
-        timer = timer + dt
-
-        -- iterating over all birds this time, calculating based on their own rate
-        for k, bird in pairs(birds) do
-
-            -- math.min ensures we don't go past the end
-            -- timer / MOVE_DURATION is a ratio that we effectively just multiply our
-            -- X by each turn to make it seem as if we're moving right
-            bird.x = math.min(endX, endX * (timer / bird.rate))
-        end
-    end
+    Timer.update(dt)
 end
 
 function love.draw()
     push:start()
 
-    -- iterate over bird table now
+    -- iterate over bird table for drawing
     for k, bird in pairs(birds) do
+        love.graphics.setColor(255, 255, 255, bird.opacity)
         love.graphics.draw(flappySprite, bird.x, bird.y)
     end
 
-    love.graphics.print(tostring(timer), 4, 4)
-    love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 4, VIRTUAL_HEIGHT - 16)
     push:finish()
 end

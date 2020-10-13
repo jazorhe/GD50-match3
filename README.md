@@ -4,16 +4,13 @@
 
 ### Summary:
 
--   **Anonymous Functions:**  
-    A fundamental concept in many dynamic languages, as well as Lua. Anonymous functions are functions that are first class, meaning that they operate as data types.
-
--   **Tweening:**  
-    Interpolating a value between two values over time. Useful for asynchronous behavior and asynchronous variable manipulation.
-
+-   **Anonymous Functions:**  A fundamental concept in many dynamic languages, as well as Lua. Anonymous functions are functions that are first class, meaning that they operate as data types.
+-   **Tweening:**  Interpolating a value between two values over time. Useful for asynchronous behavior and asynchronous variable manipulation.
 -   **Timers**
 -   **Solving Matches**
 -   **Procedural Grids**
 -   **Sprite Art and Palettes**
+
 
 ### Goal:
 <img src="img/goal.png" width="700">
@@ -131,8 +128,70 @@ Need to include the "Timer" library or module
 
 ### tween2: "The Timer.tween Way"
 
--   
+-   Opacity:
 
+        love.graphics.setColor(255, 255, 255, bird.opacity)
+
+
+-   Now start bird.opacity at 0
+-   Then change opacity and also position for each bird with bird.rate (you can pass as many parameters in and also as many entities in as you like, POWERFUL. Refer to knife documentations)
+
+        for k, bird in pairs(birds) do
+            Timer.tween(bird.rate, {
+                [bird] = { x = endX, opacity = 255 }
+            })
+        end
+
+
+-   For example a translation screen:
+    -   Draw rectangle that is the screen size and tween its opacity from 0 to 255
+    -   Enter next game state
+    -   Draw same rectangle but tween its opacity from 255 to 0
+    -   Can be any colour you like
+
+
+-   In match-3 source code, as an example to achieve multicolour flashing alphabets
+
+        self.colors = {
+            [1] = {217, 87, 99, 255},
+            [2] = {95, 205, 228, 255},
+            [3] = {251, 242, 54, 255},
+            [4] = {118, 66, 138, 255},
+            [5] = {153, 229, 80, 255},
+            [6] = {223, 113, 38, 255}
+        }
+
+        self.letterTable = {
+            {'M', -108},
+            {'A', -64},
+            {'T', -28},
+            {'C', 2},
+            {'H', 40},
+            {'3', 112}
+        }
+
+        self.colorTimer = Timer.every(0.075, function()
+            -- shift every color to the next, looping the last to front
+            -- assign it to 0 so the loop below moves it to 1, default start
+            self.colors[0] = self.colors[6]
+
+            for i = 6, 1, -1 do
+                self.colors[i] = self.colors[i - 1]
+            end
+        end)
+
+
+-   Also an example for **manipulating [self]** and using a **finish function**
+
+        Timer.tween(1, {
+            [self] = {transitionAlpha = 255}
+        }):finish(function()
+            gStateMachine:change('begin-game', {
+                level = 1
+            })
+
+
+-   
 
 ### chain0
 ### chain1
