@@ -1,12 +1,13 @@
 --[[
     GD50
-    chain0
+    chain1
 
-    Example used to showcase a simple way of moving something from point to point
-    over time in some order, effectively "chaining" the steps.
+    Example used to showcase a way of moving something from point to point using
+    the Timer:finish function.
 ]]
 
 push = require 'push'
+Timer = require 'knife.timer'
 
 VIRTUAL_WIDTH = 384
 VIRTUAL_HEIGHT = 216
@@ -21,27 +22,29 @@ function love.load()
     -- create flappy sprite and set it to 0, 0; top-left
     flappySprite = love.graphics.newImage('flappy.png')
 
-    -- current X and Y of flappy
-    flappyX, flappyY = 0, 0
+    -- table to just store flappy's X and Y
+    flappy = {x = 0, y = 0}
 
-    -- base from which we will interpolate flappy, changed every point
-    baseX, baseY = flappyX, flappyY
-
-    -- keeps track of movement time
-    timer = 0
-
-    -- our four destinations in order, stored as X,Y coordinates
-    destinations = {
-        [1] = {x = VIRTUAL_WIDTH - flappySprite:getWidth(), y = 0},
-        [2] = {x = VIRTUAL_WIDTH - flappySprite:getWidth(), y = VIRTUAL_HEIGHT - flappySprite:getHeight()},
-        [3] = {x = 0, y = VIRTUAL_HEIGHT - flappySprite:getHeight()},
-        [4] = {x = 0, y = 0}
-    }
-
-    -- add a false "reached" flag to each destination
-    for k, destination in pairs(destinations) do
-        destination.reached = false
-    end
+    -- destinations are now just placed in Timer.tween, now with a :finish
+    -- function after every tween that gets called once that tween is finished
+    Timer.tween(MOVEMENT_TIME, {
+        [flappy] = {x = VIRTUAL_WIDTH - flappySprite:getWidth(), y = 0}
+    })
+    :finish(function()
+        Timer.tween(MOVEMENT_TIME, {
+            [flappy] = {x = VIRTUAL_WIDTH - flappySprite:getWidth(), y = VIRTUAL_HEIGHT - flappySprite:getHeight()}
+        })
+        :finish(function()
+            Timer.tween(MOVEMENT_TIME, {
+                [flappy] = {x = 0, y = VIRTUAL_HEIGHT - flappySprite:getHeight()}
+            })
+            :finish(function()
+                Timer.tween(MOVEMENT_TIME, {
+                    [flappy] = {x = 0, y = 0}
+                })
+            end)
+        end)
+    end)
 
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
@@ -63,34 +66,11 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
-    timer = math.min(MOVEMENT_TIME, timer + dt)
-
-    for i, destination in ipairs(destinations) do
-        if not destination.reached then
-            flappyX, flappyY =
-                -- add the difference of the destination and base point of the
-                -- current interpolation, multiplied by the ratio of time / duration,
-                -- which performs a linear interpolation across any two values, negative
-                -- or positive
-                baseX + (destination.x - baseX) * timer / MOVEMENT_TIME,
-                baseY + (destination.y - baseY) * timer / MOVEMENT_TIME
-
-            -- flag destination as reached if we've reached the movement time and set the
-            -- base point as the new current point
-            if timer == MOVEMENT_TIME then
-                destination.reached = true
-                baseX, baseY = destination.x, destination.y
-                timer = 0
-            end
-
-            -- only need to calculate first unreached destination we iterate over
-            break
-        end
-    end
+    Timer.update(dt)
 end
 
 function love.draw()
     push:start()
-    love.graphics.draw(flappySprite, flappyX, flappyY)
+    love.graphics.draw(flappySprite, flappy.x, flappy.y)
     push:finish()
 end

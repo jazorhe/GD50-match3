@@ -225,7 +225,31 @@ Concept of chaining things together, for instance where you have a cutscene with
         timer = math.min(MOVEMENT_TIME, timer + dt)
 
 
-### chain1
+### chain1: "The Better Way"
+
+-   Using Knife module of Timer.tween:finish(), issue is, you get this nested loop as below:
+
+        Timer.tween(MOVEMENT_TIME, {
+            [flappy] = {x = VIRTUAL_WIDTH - flappySprite:getWidth(), y = 0}
+        })
+        :finish(function()
+            Timer.tween(MOVEMENT_TIME, {
+                [flappy] = {x = VIRTUAL_WIDTH - flappySprite:getWidth(), y = VIRTUAL_HEIGHT - flappySprite:getHeight()}
+            })
+            :finish(function()
+                Timer.tween(MOVEMENT_TIME, {
+                    [flappy] = {x = 0, y = VIRTUAL_HEIGHT - flappySprite:getHeight()}
+                })
+                :finish(function()
+                    Timer.tween(MOVEMENT_TIME, {
+                        [flappy] = {x = 0, y = 0}
+                    })
+                end)
+            end)
+        end)
+
+
+
 ### swap0
 ### swap1
 ### swap2
