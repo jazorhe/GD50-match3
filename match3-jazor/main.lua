@@ -1,50 +1,31 @@
 --[[
     GD50
-    chain1
+    swap0
 
-    Example used to showcase a way of moving something from point to point using
-    the Timer:finish function.
+    First example of a series illustrating swapping; this example just draws
+    the grid of tiles to the board.
 ]]
 
 push = require 'push'
-Timer = require 'knife.timer'
 
-VIRTUAL_WIDTH = 384
-VIRTUAL_HEIGHT = 216
+-- for GenerateQuads
+require 'Util'
+
+VIRTUAL_WIDTH = 512
+VIRTUAL_HEIGHT = 288
 
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 
--- seconds it takes to move each step
-MOVEMENT_TIME = 2
-
 function love.load()
-    -- create flappy sprite and set it to 0, 0; top-left
-    flappySprite = love.graphics.newImage('flappy.png')
+    -- sprite sheet of tiles
+    tileSprite = love.graphics.newImage('match3.png')
 
-    -- table to just store flappy's X and Y
-    flappy = {x = 0, y = 0}
+    -- individual tile quads
+    tileQuads = GenerateQuads(tileSprite, 32, 32)
 
-    -- destinations are now just placed in Timer.tween, now with a :finish
-    -- function after every tween that gets called once that tween is finished
-    Timer.tween(MOVEMENT_TIME, {
-        [flappy] = {x = VIRTUAL_WIDTH - flappySprite:getWidth(), y = 0}
-    })
-    :finish(function()
-        Timer.tween(MOVEMENT_TIME, {
-            [flappy] = {x = VIRTUAL_WIDTH - flappySprite:getWidth(), y = VIRTUAL_HEIGHT - flappySprite:getHeight()}
-        })
-        :finish(function()
-            Timer.tween(MOVEMENT_TIME, {
-                [flappy] = {x = 0, y = VIRTUAL_HEIGHT - flappySprite:getHeight()}
-            })
-            :finish(function()
-                Timer.tween(MOVEMENT_TIME, {
-                    [flappy] = {x = 0, y = 0}
-                })
-            end)
-        end)
-    end)
+    -- board of tiles
+    board = generateBoard()
 
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
@@ -65,12 +46,57 @@ function love.keypressed(key)
     end
 end
 
-function love.update(dt)
-    Timer.update(dt)
-end
-
 function love.draw()
     push:start()
-    love.graphics.draw(flappySprite, flappy.x, flappy.y)
+
+    -- draw the board with an offset so it's centered on the screen
+    drawBoard(128, 16)
+
     push:finish()
+end
+
+--[[
+    Populates a table with mini-tables each containing X and Y coordinates for
+    tiles to draw them at, as well as the quad ID associated with them.
+]]
+function generateBoard()
+    local tiles = {}
+
+    -- each column of tiles
+    for y = 1, 8 do
+
+        -- row of tiles
+        table.insert(tiles, {})
+
+        for x = 1, 8 do
+
+            -- tiles[y] will be the blank table we just inserted
+            table.insert(tiles[y], {
+
+                --coordinates are 0-based, so subtract one before multiplying by 32
+                x = (x - 1) * 32,
+                y = (y - 1) * 32,
+
+                -- assign a random ID to tile to make it a random tile
+                tile = math.random(#tileQuads)
+            })
+        end
+    end
+
+    return tiles
+end
+
+function drawBoard(offsetX, offsetY)
+    -- draw each column
+    for y = 1, 8 do
+
+        -- draw each row
+        for x = 1, 8 do
+            local tile = board[y][x]
+
+            -- draw spritesheet using the tile's quad, adding offsets
+            love.graphics.draw(tileSprite, tileQuads[tile.tile],
+                tile.x + offsetX, tile.y + offsetY)
+        end
+    end
 end
