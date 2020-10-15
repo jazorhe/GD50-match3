@@ -299,7 +299,7 @@ Concept of chaining things together, for instance where you have a cutscene with
 -   [x] Read and understand all of the Match-3 source code from Lecture 3.
 -   [x] Implement time addition on matches, such that scoring a match extends the timer by 1 second per tile in a match.
 -   [x] Ensure Level 1 starts just with simple flat blocks (the first of each color in the sprite sheet), with later levels generating the blocks with patterns on them (like the triangle, cross, etc.). These should be worth more points, at your discretion.
--   [ ] Creat random shiny versions of blocks that will destroy an entire row on match, granting points for each block in the row.
+-   [x] Creat random shiny versions of blocks that will destroy an entire row on match, granting points for each block in the row.
 -   [ ] Only allow swapping when it results in a match. If there are no matches available to perform, reset the board.
 -   [ ] (Optional) Implement matching using the mouse. (Hint: you’ll need push:toGame(x,y); see the push library’s documentation [here](https://github.com/Ulydev/push) for details!
 
@@ -315,18 +315,20 @@ Ensure Level 1 starts just with simple flat blocks (the first of each color in t
 
 -   Decrease total number of colours appears
     -   I like: 1, 4, 6, 7, 13, 16
-
 -   Decrease total number of variety appears
     -   I like: 1, 5, 6
-
 -   Basically create table of above numbers, and when generate new tiles, math random the length of above tables.
-
 -   Pass the above tables into Board initialisation base current level
-
 -   When calculate matches, iterate through each match for  all tiles, get their variety and apply bonus.
 
 
-### Shiny Clears a Row
+### The Shiny One
+Create random shiny versions of blocks that will destroy an entire row on match, granting points for each block in the row. This one will require a little more work! We’ll need to modify the Tile class most likely to hold some kind of flag to let us know whether it’s shiny and then test for its presence in Board:calculateMatches!
+
+-   Add isShiny property
+-   Randomly generate a shiny block
+-   Add Highlight for shiny block
+-   When clear, clear entire row
 
 ### Swap Adjacent Only
 

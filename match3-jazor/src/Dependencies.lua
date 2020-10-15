@@ -1,19 +1,3 @@
---[[
-    GD50
-    Match-3 Remake
-
-    Author: Colton Ogden
-    cogden@cs50.harvard.edu
-
-    -- Dependencies --
-
-    A file to organize all of the global dependencies for our project, as
-    well as the assets for our game, rather than pollute our main.lua file.
-]]
-
---
--- libraries
---
 Class = require 'lib/class'
 
 push = require 'lib/push'
@@ -52,7 +36,8 @@ gSounds = {
 
 gTextures = {
     ['main'] = love.graphics.newImage('graphics/match3.png'),
-    ['background'] = love.graphics.newImage('graphics/background.png')
+    ['background'] = love.graphics.newImage('graphics/background.png'),
+    ['particle'] = love.graphics.newImage('graphics/particle.png')
 }
 
 gFrames = {
@@ -67,3 +52,6 @@ gFonts = {
     ['medium'] = love.graphics.newFont('fonts/font.ttf', 16),
     ['large'] = love.graphics.newFont('fonts/font.ttf', 32)
 }
+
+SHINY_RATE = 40
+BASE_SCORE = 20

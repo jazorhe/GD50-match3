@@ -148,7 +148,7 @@ function PlayState:update(dt)
             end
         end
     end
-
+    self.board:update(dt)
     Timer.update(dt)
 end
 
@@ -183,11 +183,15 @@ function PlayState:calculateMatches()
                     bonus = 1.3
                 end
 
-            totalBonus = totalBonus + bonus * 50
+                if match[i].isShiny then
+                    bonus = 5
+                end
+
+            totalBonus = totalBonus + bonus * BASE_SCORE
 
         end
 
-            self.score = self.score + #match * 50 + totalBonus
+            self.score = self.score + #match * BASE_SCORE + totalBonus
             self.timer = self.timer + #match * 1
         end
 

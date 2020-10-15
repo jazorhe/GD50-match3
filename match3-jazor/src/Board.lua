@@ -33,7 +33,12 @@ function Board:initializeTiles()
 
         for tileX = 1, 8 do
             -- create a new tile at X,Y with a random color and variety
-            table.insert(self.tiles[tileY], Tile(tileX, tileY, self.useColours[math.random(#self.useColours)], self.useVarieties[math.random(#self.useVarieties)]))
+                if math.random(SHINY_RATE) == 1 then
+                    table.insert(self.tiles[tileY], Tile(tileX, tileY, self.useColours[math.random(#self.useColours)], self.useVarieties[math.random(#self.useVarieties)], true))
+                else
+                    table.insert(self.tiles[tileY], Tile(tileX, tileY, self.useColours[math.random(#self.useColours)], self.useVarieties[math.random(#self.useVarieties)], false))
+
+            end
         end
     end
 
@@ -144,7 +149,9 @@ function Board:calculateMatches()
 
             -- go backwards from end of last row by matchNum
             for y = 8, 8 - matchNum, -1 do
-                table.insert(match, self.tiles[y][x])
+                if y >= 1 and y <= 8 then
+                    table.insert(match, self.tiles[y][x])
+                end
             end
 
             table.insert(matches, match)
@@ -165,6 +172,11 @@ end
 function Board:removeMatches()
     for k, match in pairs(self.matches) do
         for k, tile in pairs(match) do
+            if tile.isShiny then
+                for i = 1, 8 do
+                    self.tiles[tile.gridY][i] = nil
+                end
+            end
             self.tiles[tile.gridY][tile.gridX] = nil
         end
     end
@@ -229,7 +241,13 @@ function Board:getFallingTiles()
 
             -- if the tile is nil, we need to add a new one
             if not tile then
-                local tile = Tile(x, y, self.useColours[math.random(#self.useColours)], self.useVarieties[math.random(#self.useVarieties)])
+
+                if math.random(SHINY_RATE) == 1 then
+                    tile = Tile(x, y, self.useColours[math.random(#self.useColours)], self.useVarieties[math.random(#self.useVarieties)], true)
+                else
+                    tile = Tile(x, y, self.useColours[math.random(#self.useColours)], self.useVarieties[math.random(#self.useVarieties)], false)
+                end
+
                 tile.y = -32
                 self.tiles[y][x] = tile
 
@@ -247,10 +265,23 @@ function Board:getNewTiles()
     return {}
 end
 
+function Board:update(dt)
+    for y = 1, #self.tiles do
+        for x = 1, #self.tiles[1] do
+            if self.tiles[y][x].isShiny then
+                self.tiles[y][x]:update(dt)
+            end
+        end
+    end
+end
+
 function Board:render()
     for y = 1, #self.tiles do
         for x = 1, #self.tiles[1] do
             self.tiles[y][x]:render(self.x, self.y)
+            if self.tiles[y][x].isShiny then
+                self.tiles[y][x]:renderParticles(self.x, self.y)
+            end
         end
     end
 end

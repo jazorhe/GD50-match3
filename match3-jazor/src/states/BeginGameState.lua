@@ -19,7 +19,7 @@ function BeginGameState:init()
     self.transitionAlpha = 1
 
     -- spawn a board and place it toward the right
-    self.board = Board(VIRTUAL_WIDTH - 272, 16, {1, 4, 6, 7, 13, 16}, {1, 5, 6})
+    self.board = Board(VIRTUAL_WIDTH - 272, 16, {1, 4, 6, 7, 13, 1}, {1})
 
     -- start our level # label off-screen
     self.levelLabelY = -64
@@ -37,7 +37,7 @@ function BeginGameState:enter(def)
         useVarieties = {1, 5, 6}
     end
 
-    self.baord = Board(VIRTUAL_WIDTH - 272, 16, useColours, useVarieties)
+    self.board = Board(VIRTUAL_WIDTH - 272, 16, useColours, useVarieties)
     --
     -- animate our white screen fade-in, then animate a drop-down with
     -- the level text
