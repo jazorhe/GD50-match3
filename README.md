@@ -261,14 +261,37 @@ Concept of chaining things together, for instance where you have a cutscene with
             -   Property Table
 
 
-### swap1
+### swap1: "The Static Swap"
 
 -   Swap with middle man
 
 
-### swap2
+### swap2: "The Tween Swap"
+
+-   
+
 ### match-3
 
+-   Check Matching
+    -   Iterate Rows to find hrizontal match
+    -   Iterate Columns to find vertical match
+    -   Add matches into a match table
+
+-   Remove Matches
+    -   Set matches tiles to nil
+
+-   Move Tiles
+    -   Start from bottom, if nil look above
+    -   If tile fonud, move it down (tween)
+    -   Iterate through Columns
+
+-   Repalce Tiles
+    -   Iterate Columns to see how many tiles need to be generated
+    -   Tween new tiles to correct positions
+
+
+
+<br>
 
 # Assignment 3
 
