@@ -298,7 +298,7 @@ Concept of chaining things together, for instance where you have a cutscene with
 ## Objectives
 -   [x] Read and understand all of the Match-3 source code from Lecture 3.
 -   [x] Implement time addition on matches, such that scoring a match extends the timer by 1 second per tile in a match.
--   [ ] Ensure Level 1 starts just with simple flat blocks (the first of each color in the sprite sheet), with later levels generating the blocks with patterns on them (like the triangle, cross, etc.). These should be worth more points, at your discretion.
+-   [x] Ensure Level 1 starts just with simple flat blocks (the first of each color in the sprite sheet), with later levels generating the blocks with patterns on them (like the triangle, cross, etc.). These should be worth more points, at your discretion.
 -   [ ] Creat random shiny versions of blocks that will destroy an entire row on match, granting points for each block in the row.
 -   [ ] Only allow swapping when it results in a match. If there are no matches available to perform, reset the board.
 -   [ ] (Optional) Implement matching using the mouse. (Hint: you’ll need push:toGame(x,y); see the push library’s documentation [here](https://github.com/Ulydev/push) for details!
@@ -309,9 +309,21 @@ Implement time addition on matches, such that scoring a match extends the timer 
 
 - Simple
 
+
 ### Advanced Levels
 Ensure Level 1 starts just with simple flat blocks (the first of each color in the sprite sheet), with later levels generating the blocks with patterns on them (like the triangle, cross, etc.). These should be worth more points, at your discretion. This one will be a little trickier than the last step (but only slightly); right now, random colors and varieties are chosen in Board:initializeTiles, but perhaps we could pass in the level variable from the PlayState when a Board is created (specifically in PlayState:enter), and then let that influence what variety is chosen?
 
+-   Decrease total number of colours appears
+    -   I like: 1, 4, 6, 7, 13, 16
+
+-   Decrease total number of variety appears
+    -   I like: 1, 5, 6
+
+-   Basically create table of above numbers, and when generate new tiles, math random the length of above tables.
+
+-   Pass the above tables into Board initialisation base current level
+
+-   When calculate matches, iterate through each match for  all tiles, get their variety and apply bonus.
 
 
 ### Shiny Clears a Row

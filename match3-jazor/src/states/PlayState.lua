@@ -41,7 +41,7 @@ function PlayState:enter(params)
     self.level = params.level
 
     -- spawn a board and place it toward the right
-    self.board = params.board or Board(VIRTUAL_WIDTH - 272, 16)
+    self.board = params.board or Board(VIRTUAL_WIDTH - 272, 16, {1, 4, 6, 7, 13, 16}, {1, 5, 6})
 
     -- grab score from params if it was passed
     self.score = params.score or 0
@@ -85,16 +85,16 @@ function PlayState:update(dt)
 
     if self.canInput then
         -- move cursor around based on bounds of grid, playing sounds
-        if love.keyboard.wasPressed('up') then
+        if love.keyboard.wasPressed('up') or love.keyboard.wasPressed('w') then
             self.boardHighlightY = math.max(0, self.boardHighlightY - 1)
             gSounds['select']:play()
-        elseif love.keyboard.wasPressed('down') then
+        elseif love.keyboard.wasPressed('down') or love.keyboard.wasPressed('s') then
             self.boardHighlightY = math.min(7, self.boardHighlightY + 1)
             gSounds['select']:play()
-        elseif love.keyboard.wasPressed('left') then
+        elseif love.keyboard.wasPressed('left') or love.keyboard.wasPressed('a') then
             self.boardHighlightX = math.max(0, self.boardHighlightX - 1)
             gSounds['select']:play()
-        elseif love.keyboard.wasPressed('right') then
+        elseif love.keyboard.wasPressed('right') or love.keyboard.wasPressed('d') then
             self.boardHighlightX = math.min(7, self.boardHighlightX + 1)
             gSounds['select']:play()
         end
@@ -170,8 +170,25 @@ function PlayState:calculateMatches()
 
         -- add score for each match
         for k, match in pairs(matches) do
-            self.score = self.score + #match * 50
-            self.timer = self.timer + #match * 1 
+            local totalBonus = 0
+            local bonus = 0
+
+            for i = 1, #match do
+
+                if match[i].variety > 1 and match[i].variety < 5 then
+                    bonus = 1.1
+                elseif match[i].variety == 5 then
+                    bonus = 1.2
+                elseif match[i].variety == 6 then
+                    bonus = 1.3
+                end
+
+            totalBonus = totalBonus + bonus * 50
+
+        end
+
+            self.score = self.score + #match * 50 + totalBonus
+            self.timer = self.timer + #match * 1
         end
 
         -- remove any tiles that matched from the board, making empty spaces
