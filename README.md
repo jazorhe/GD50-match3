@@ -307,7 +307,7 @@ Concept of chaining things together, for instance where you have a cutscene with
 -   [x] **Advanced Levels:** Ensure Level 1 starts just with simple flat blocks (the first of each color in the sprite sheet), with later levels generating the blocks with patterns on them (like the triangle, cross, etc.). These should be worth more points, at your discretion.
 -   [x] **The Shiny One:** Creat random shiny versions of blocks that will destroy an entire row on match, granting points for each block in the row.
 -   [x] **Swap On Matches Only:** Only allow swapping when it results in a match. If there are no matches available to perform, reset the board.
--   [ ] **Mouse Control (Optional):** Implement matching using the mouse. (Hint: you’ll need push:toGame(x,y); see the push library’s documentation [here](https://github.com/Ulydev/push) for details!
+-   [x] **Mouse Control (Optional):** Implement matching using the mouse. (Hint: you’ll need push:toGame(x,y); see the push library’s documentation [here](https://github.com/Ulydev/push) for details!
 
 
 <br>   
@@ -469,6 +469,109 @@ Only allow swapping when it results in a match. If there are no matches availabl
 ### Mouse Control
 (Optional) Implement matching using the mouse. (Hint: you’ll need push:toGame(x,y); see the push library’s documentation here for details! This one’s fairly self-explanatory; feel free to implement click-based, drag-based, or both for your application! This one’s only if you’re feeling up for a bonus challenge :) Have fun!
 
+
+-   I have tried that on flappy bird, but without `push:toGame(x,y)`
+-   Debug tool (also check is mouse moved):
+
+    ```lua
+    lastMouseX = mouseX
+    lastMouseY = mouseY
+
+    mouseX, mouseY = push:toGame(love.mouse.getPosition())
+
+    if not (mouseX - lastMouseX == 0) or not (mouseY - lastMouseY == 0) then
+        mouseMoved = true
+    else
+        mouseMoved = false
+    end
+    ```
+
+
+-   Add mouse control to StartState:
+
+    ```lua
+    if mouseX > VIRTUAL_WIDTH / 2 - 50 and mouseX < VIRTUAL_WIDTH / 2 + 50 then
+
+        if mouseY > VIRTUAL_HEIGHT / 2 + 20 and mouseY < VIRTUAL_HEIGHT / 2 + 20 + 16 then
+
+
+            if mouseMoved and self.currentMenuItem == 2  then
+                self.currentMenuItem = 1
+                gSounds['select']:play()
+            end
+
+            if love.mouse.wasPressed(1) then
+
+                Timer.tween(1, {
+                    [self] = {transitionAlpha = 1}
+                }):finish(function()
+                    gStateMachine:change('begin-game', {
+                        level = 1
+                    })
+
+                    self.colorTimer:remove()
+                end)
+
+            end
+
+        elseif mouseY > VIRTUAL_HEIGHT / 2 + 45 and mouseY < VIRTUAL_HEIGHT / 2 + 45 + 16 then
+            if mouseMoved and self.currentMenuItem == 1 then
+                self.currentMenuItem = 2
+                gSounds['select']:play()
+            end
+
+            if love.mouse.wasPressed(1) then
+                love.event.quit()
+            end
+
+        end
+
+    end
+    ```
+
+-   Add Mouse Control to play state
+
+    ```lua
+    if mouseX > VIRTUAL_WIDTH - 272 and mouseX < VIRTUAL_WIDTH - 272 + 32 * 8 and mouseY > 16 and mouseY < 16 + 32 * 8 then
+
+        if mouseMoved then
+            self.boardHighlightX = math.floor((mouseX - (VIRTUAL_WIDTH - 272)) / 32)
+            self.boardHighlightY = math.floor((mouseY - 16) / 32)
+        end
+
+        if love.mouse.wasPressed(1) then
+            self:confirmTile()
+        end
+
+    end
+    ```
+
+-   Also packed PlayState:confirmTile() for easier access
+
+    ```lua
+    function PlayState:confirmTile()
+        -- if same tile as currently highlighted, deselect
+        local x = self.boardHighlightX + 1
+        local y = self.boardHighlightY + 1
+
+        -- if nothing is highlighted, highlight current tile
+        if not self.highlightedTile then
+            self.highlightedTile = self.board.tiles[y][x]
+
+        -- if we select the position already highlighted, remove highlight
+        elseif self.highlightedTile == self.board.tiles[y][x] then
+            self.highlightedTile = nil
+
+        -- if the difference between X and Y combined of this highlighted tile
+        -- vs the previous is not equal to 1, also remove highlight
+        elseif math.abs(self.highlightedTile.gridX - x) + math.abs(self.highlightedTile.gridY - y) > 1 then
+            gSounds['error']:play()
+            self.highlightedTile = nil
+        else
+            self:swapTiles(x, y)
+        end
+    end    
+    ```
 
 
 Final Submission:

@@ -1,17 +1,3 @@
---[[
-    GD50
-    Match-3 Remake
-
-    -- StartState Class --
-
-    Author: Colton Ogden
-    cogden@cs50.harvard.edu
-
-    Represents the state the game is in when we've just started; should
-    simply display "Match-3" in large text, as well as a message to press
-    Enter to begin.
-]]
-
 local positions = {}
 
 StartState = Class{__includes = BaseState}
@@ -64,6 +50,8 @@ function StartState:init()
 end
 
 function StartState:update(dt)
+
+    globalMute()
     if love.keyboard.wasPressed('escape') then
         love.event.quit()
     end
@@ -76,13 +64,11 @@ function StartState:update(dt)
             gSounds['select']:play()
         end
 
-        globalMute()
 
         -- switch to another state via one of the menu options
         if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
             if self.currentMenuItem == 1 then
-                -- tween, using Timer, the transition rect's alpha to 255, then
-                -- transition to the BeginGame state after the animation is over
+
                 Timer.tween(1, {
                     [self] = {transitionAlpha = 1}
                 }):finish(function()
@@ -100,6 +86,48 @@ function StartState:update(dt)
             -- turn off input during transition
             self.pauseInput = true
         end
+
+
+        if mouseX > VIRTUAL_WIDTH / 2 - 50 and mouseX < VIRTUAL_WIDTH / 2 + 50 then
+
+            if mouseY > VIRTUAL_HEIGHT / 2 + 20 and mouseY < VIRTUAL_HEIGHT / 2 + 20 + 16 then
+
+
+                if mouseMoved and self.currentMenuItem == 2  then
+                    self.currentMenuItem = 1
+                    gSounds['select']:play()
+                end
+
+                if love.mouse.wasPressed(1) then
+
+                    Timer.tween(1, {
+                        [self] = {transitionAlpha = 1}
+                    }):finish(function()
+                        gStateMachine:change('begin-game', {
+                            level = 1
+                        })
+
+                        self.colorTimer:remove()
+                    end)
+
+                end
+
+            elseif mouseY > VIRTUAL_HEIGHT / 2 + 45 and mouseY < VIRTUAL_HEIGHT / 2 + 45 + 16 then
+                if mouseMoved and self.currentMenuItem == 1 then
+                    self.currentMenuItem = 2
+                    gSounds['select']:play()
+                end
+
+                if love.mouse.wasPressed(1) then
+                    love.event.quit()
+                end
+
+            end
+
+        end
+
+
+
     end
 
     -- update our Timer, which will be used for our fade transitions
@@ -145,7 +173,7 @@ function StartState:drawMatch3Text(y)
 
     -- draw MATCH 3 text shadows
     love.graphics.setFont(gFonts['large'])
-    self:drawTextShadow('MATCH 3', VIRTUAL_HEIGHT / 2 + y)
+    drawTextShadow('MATCH 3', 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT / 2 + y)
 
     -- print MATCH 3 letters in their corresponding current colors
     for i = 1, 6 do
@@ -165,7 +193,7 @@ function StartState:drawOptions(y)
 
     -- draw Start text
     love.graphics.setFont(gFonts['medium'])
-    self:drawTextShadow('Start', VIRTUAL_HEIGHT / 2 + y + 8)
+    drawTextShadow('Start', 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT / 2 + y + 8)
 
     if self.currentMenuItem == 1 then
         love.graphics.setColor(99 / 255, 155 / 255, 1, 1)
@@ -177,7 +205,7 @@ function StartState:drawOptions(y)
 
     -- draw Quit Game text
     love.graphics.setFont(gFonts['medium'])
-    self:drawTextShadow('Quit Game', VIRTUAL_HEIGHT / 2 + y + 33)
+    drawTextShadow('Quit Game', 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT / 2 + y + 33)
 
     if self.currentMenuItem == 2 then
         love.graphics.setColor(99 / 255, 155 / 255, 1, 1)
@@ -188,14 +216,6 @@ function StartState:drawOptions(y)
     love.graphics.printf('Quit Game', 0, VIRTUAL_HEIGHT / 2 + y + 33, VIRTUAL_WIDTH, 'center')
 end
 
---[[
-    Helper function for drawing just text backgrounds; draws several layers of the same text, in
-    black, over top of one another for a thicker shadow.
-]]
-function StartState:drawTextShadow(text, y)
-    love.graphics.setColor(34 / 255, 32 / 255, 52 / 255, 1)
-    love.graphics.printf(text, 2, y + 1, VIRTUAL_WIDTH, 'center')
-    love.graphics.printf(text, 1, y + 1, VIRTUAL_WIDTH, 'center')
-    love.graphics.printf(text, 0, y + 1, VIRTUAL_WIDTH, 'center')
-    love.graphics.printf(text, 1, y + 2, VIRTUAL_WIDTH, 'center')
+function StartState:debugRender()
+
 end

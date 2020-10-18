@@ -1,33 +1,3 @@
---[[
-    GD50
-    Match-3 Remake
-
-    Author: Colton Ogden
-    cogden@cs50.harvard.edu
-
-    Match-3 has taken several forms over the years, with its roots in games
-    like Tetris in the 80s. Bejeweled, in 2001, is probably the most recognized
-    version of this game, as well as Candy Crush from 2012, though all these
-    games owe Shariki, a DOS game from 1994, for their inspiration.
-
-    The goal of the game is to match any three tiles of the same variety by
-    swapping any two adjacent tiles; when three or more tiles match in a line,
-    those tiles add to the player's score and are removed from play, with new
-    tiles coming from the ceiling to replace them.
-
-    As per previous projects, we'll be adopting a retro, NES-quality aesthetic.
-
-    Credit for graphics (amazing work!):
-    https://opengameart.org/users/buch
-
-    Credit for music (awesome track):
-    http://freemusicarchive.org/music/RoccoW/
-
-    Cool texture generator, used for background:
-    http://cpetry.github.io/TextureGenerator-Online/
-]]
-
--- this time, we're keeping all requires and assets in our Dependencies.lua file
 require 'src/Dependencies'
 
 -- physical screen dimensions
@@ -37,6 +7,8 @@ WINDOW_HEIGHT = 720
 -- virtual resolution dimensions
 VIRTUAL_WIDTH = 512
 VIRTUAL_HEIGHT = 288
+
+DEBUG = true
 
 function love.load()
     -- initialize our nearest-neighbor filter
@@ -61,6 +33,8 @@ function love.load()
     gVolume = love.audio.getVolume()
     gMute = false
 
+    triggerMute()
+
     -- initialize state machine with all state-returning functions
     gStateMachine = StateMachine {
         ['start'] = function() return StartState() end,
@@ -76,24 +50,18 @@ function love.load()
 
     -- initialize input table
     love.keyboard.keysPressed = {}
+    love.mouse.buttonsPressed  = {}
+
+    mouseX = 0
+    mouseY = 0
+    mouseMoved = false
 end
+
 
 function love.resize(w, h)
     push:resize(w, h)
 end
 
-function love.keypressed(key)
-    -- add to our table of keys pressed this frame
-    love.keyboard.keysPressed[key] = true
-end
-
-function love.keyboard.wasPressed(key)
-    if love.keyboard.keysPressed[key] then
-        return true
-    else
-        return false
-    end
-end
 
 function love.update(dt)
     -- scroll background, used across all states
@@ -104,10 +72,24 @@ function love.update(dt)
         backgroundX = 0
     end
 
+    lastMouseX = mouseX
+    lastMouseY = mouseY
+
+    mouseX, mouseY = push:toGame(love.mouse.getPosition())
+
+    if not (mouseX - lastMouseX == 0) or not (mouseY - lastMouseY == 0) then
+        mouseMoved = true
+    else
+        mouseMoved = false
+    end
+
+
     gStateMachine:update(dt)
 
     love.keyboard.keysPressed = {}
+    love.mouse.buttonsPressed  = {}
 end
+
 
 function love.draw()
     push:start()
@@ -115,22 +97,23 @@ function love.draw()
     -- scrolling background drawn behind every state
     love.graphics.draw(gTextures['background'], backgroundX, 0)
 
+    if DEBUG then
+        love.graphics.setFont(gFonts['medium'])
+        love.graphics.setColor(99 / 255, 155 / 255, 1, 1)
+        love.graphics.print('mouseX: ' .. tostring(mouseX), 8, VIRTUAL_HEIGHT - 32)
+        love.graphics.print('mousey: ' .. tostring(mouseY), 8, VIRTUAL_HEIGHT - 16)
+
+        gStateMachine:debugRender()
+    end
+
     gStateMachine:render()
     push:finish()
 end
 
-
-function globalMute()
-
-    if love.keyboard.wasPressed('m') then
-        if not gMute then
-            gVolume = love.audio.getVolume()
-            love.audio.setVolume(0)
-            gMute = true
-        else
-            love.audio.setVolume(gVolume)
-            gMute = false
-        end
-    end
-
+function drawTextShadow(text, xmin, xmax, y)
+    love.graphics.setColor(34 / 255, 32 / 255, 52 / 255, 1)
+    love.graphics.printf(text, xmin + 2, y + 1, xmax, 'center')
+    love.graphics.printf(text, xmin + 1, y + 1, xmax, 'center')
+    love.graphics.printf(text, xmin, y + 1, xmax, 'center')
+    love.graphics.printf(text, xmin + 1, y + 2, xmax, 'center')
 end

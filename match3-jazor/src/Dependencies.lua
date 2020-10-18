@@ -10,8 +10,10 @@ Timer = require 'lib/knife.timer'
 --
 
 -- utility
-require 'src/StateMachine'
 require 'src/Util'
+require 'src/StateMachine'
+require 'src/MouseSupport'
+require 'src/KeyboardSupport'
 
 -- game pieces
 require 'src/Board'
@@ -55,3 +57,20 @@ gFonts = {
 
 SHINY_RATE = 40
 BASE_SCORE = 20
+
+function globalMute()
+    if love.keyboard.wasPressed('m') then
+        triggerMute()
+    end
+end
+
+function triggerMute()
+    if not gMute then
+        gVolume = love.audio.getVolume()
+        love.audio.setVolume(0)
+        gMute = true
+    else
+        love.audio.setVolume(gVolume)
+        gMute = false
+    end
+end

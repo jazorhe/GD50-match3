@@ -2,6 +2,7 @@ PlayState = Class{__includes = BaseState}
 
 function PlayState:init()
     -- start our transition alpha at full, so we fade in
+    self.currentMenuItem = 0
     self.transitionAlpha = 1
 
     -- position in the grid which we're highlighting
@@ -52,7 +53,7 @@ end
 
 function PlayState:update(dt)
     if love.keyboard.wasPressed('escape') then
-        love.event.quit()
+        gStateMachine:change('start')
     end
 
     globalMute()
@@ -101,33 +102,65 @@ function PlayState:update(dt)
             gSounds['select']:play()
         end
 
+        if mouseX > VIRTUAL_WIDTH - 272 and mouseX < VIRTUAL_WIDTH - 272 + 32 * 8 and mouseY > 16 and mouseY < 16 + 32 * 8 then
+
+            if mouseMoved then
+                self.boardHighlightX = math.floor((mouseX - (VIRTUAL_WIDTH - 272)) / 32)
+                self.boardHighlightY = math.floor((mouseY - 16) / 32)
+            end
+
+            if love.mouse.wasPressed(1) then
+                self:confirmTile()
+            end
+
+        end
+
+        if mouseX > 20 and mouseX < 182 and mouseY > 136 and mouseY < 136 + 20 then
+
+            if mouseMoved and self.currentMenuItem == 0 then
+                self.currentMenuItem = 1
+            end
+
+            if love.mouse.wasPressed(1) then
+                gStateMachine:change('start')
+            end
+
+        else
+            self.currentMenuItem = 0
+        end
+
         -- if we've pressed enter, to select or deselect a tile...
         if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
-            -- if same tile as currently highlighted, deselect
-            local x = self.boardHighlightX + 1
-            local y = self.boardHighlightY + 1
-
-            -- if nothing is highlighted, highlight current tile
-            if not self.highlightedTile then
-                self.highlightedTile = self.board.tiles[y][x]
-
-            -- if we select the position already highlighted, remove highlight
-            elseif self.highlightedTile == self.board.tiles[y][x] then
-                self.highlightedTile = nil
-
-            -- if the difference between X and Y combined of this highlighted tile
-            -- vs the previous is not equal to 1, also remove highlight
-            elseif math.abs(self.highlightedTile.gridX - x) + math.abs(self.highlightedTile.gridY - y) > 1 then
-                gSounds['error']:play()
-                self.highlightedTile = nil
-            else
-                self:swapTiles(x, y)
-            end
+            self:confirmTile()
         end
     end
     self.board:update(dt)
     Timer.update(dt)
 end
+
+function PlayState:confirmTile()
+    -- if same tile as currently highlighted, deselect
+    local x = self.boardHighlightX + 1
+    local y = self.boardHighlightY + 1
+
+    -- if nothing is highlighted, highlight current tile
+    if not self.highlightedTile then
+        self.highlightedTile = self.board.tiles[y][x]
+
+    -- if we select the position already highlighted, remove highlight
+    elseif self.highlightedTile == self.board.tiles[y][x] then
+        self.highlightedTile = nil
+
+    -- if the difference between X and Y combined of this highlighted tile
+    -- vs the previous is not equal to 1, also remove highlight
+    elseif math.abs(self.highlightedTile.gridX - x) + math.abs(self.highlightedTile.gridY - y) > 1 then
+        gSounds['error']:play()
+        self.highlightedTile = nil
+    else
+        self:swapTiles(x, y)
+    end
+end
+
 
 function PlayState:swapTiles(x, y)
     local tempX = self.highlightedTile.gridX
@@ -255,7 +288,7 @@ function PlayState:render()
 
     -- GUI text
     love.graphics.setColor(56 / 255, 56 / 255, 56 / 255, 234 / 255)
-    love.graphics.rectangle('fill', 16, 16, 186, 116, 4)
+    love.graphics.rectangle('fill', 16, 16, 186, 144, 4)
 
     love.graphics.setColor(99 / 255, 155 / 255, 1, 1)
     love.graphics.setFont(gFonts['medium'])
@@ -263,5 +296,20 @@ function PlayState:render()
     love.graphics.printf('Score: ' .. tostring(self.score), 20, 52, 182, 'center')
     love.graphics.printf('Goal : ' .. tostring(self.scoreGoal), 20, 80, 182, 'center')
     love.graphics.printf('Timer: ' .. tostring(self.timer), 20, 108, 182, 'center')
-    love.graphics.printf('swapTimer: ' .. tostring(self.swapTimer), 20, 150, 182, 'center')
+
+    drawTextShadow('Menu', 20, 182, 136)
+    if self.currentMenuItem == 1 then
+        love.graphics.setColor(99 / 255, 155 / 255, 1, 1)
+    else
+        love.graphics.setColor(48 / 255, 96 / 255, 130 / 255, 1)
+    end
+    love.graphics.printf('Menu', 20, 136, 182, 'center')
+
+end
+
+function PlayState:debugRender()
+    love.graphics.setFont(gFonts['medium'])
+    love.graphics.setColor(99 / 255, 155 / 255, 1, 1)
+    love.graphics.print('bX: ' .. tostring(self.boardHighlightX), 8, VIRTUAL_HEIGHT - 64)
+    love.graphics.print('bY: ' .. tostring(self.boardHighlightY), 8, VIRTUAL_HEIGHT - 48)
 end

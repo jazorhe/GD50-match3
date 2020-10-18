@@ -27,3 +27,7 @@ function GameOverState:render()
     love.graphics.printf('Your Score: ' .. tostring(self.score), VIRTUAL_WIDTH / 2 - 64, 140, 128, 'center')
     love.graphics.printf('Press Enter', VIRTUAL_WIDTH / 2 - 64, 180, 128, 'center')
 end
+
+function GameOverState:debugRender()
+
+end

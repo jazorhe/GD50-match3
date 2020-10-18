@@ -1,17 +1,3 @@
---[[
-    GD50
-    Match-3 Remake
-
-    -- BeginGameState Class --
-
-    Author: Colton Ogden
-    cogden@cs50.harvard.edu
-
-    Represents the state the game is in right before we start playing;
-    should fade in, display a drop-down "Level X" message, then transition
-    to the PlayState, where we can finally use player input.
-]]
-
 BeginGameState = Class{__includes = BaseState}
 
 function BeginGameState:init()
@@ -85,12 +71,17 @@ function BeginGameState:render()
     -- render Level # label and background rect
     love.graphics.setColor(95 / 255, 205 / 255, 228 / 255, 200 / 255)
     love.graphics.rectangle('fill', 0, self.levelLabelY - 8, VIRTUAL_WIDTH, 48)
-    love.graphics.setColor(255 / 255, 255 / 255, 255 / 255, 255 / 255)
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.setFont(gFonts['large'])
     love.graphics.printf('Level ' .. tostring(self.level),
         0, self.levelLabelY, VIRTUAL_WIDTH, 'center')
 
     -- our transition foreground rectangle
-    love.graphics.setColor(255 / 255, 255 / 255, 255 / 255, self.transitionAlpha)
+    love.graphics.setColor(1, 1, 1, self.transitionAlpha)
     love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
+end
+
+
+function BeginGameState:debugRender()
+
 end

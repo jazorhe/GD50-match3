@@ -178,7 +178,7 @@ function Board:removeMatches()
         end
     end
     self.matches = nil
-    
+
 end
 
 function Board:getFallingTiles()

@@ -1,20 +1,3 @@
---[[
-    GD50
-    Match-3 Remake
-
-    -- StartState Class --
-
-    Author: Colton Ogden
-    cogden@cs50.harvard.edu
-
-    Helper functions for writing Match-3.
-]]
-
---[[
-    Given an "atlas" (a texture with multiple sprites), as well as a
-    width and a height for the tiles therein, split the texture into
-    all of the quads by simply dividing it evenly.
-]]
 function GenerateQuads(atlas, tilewidth, tileheight)
     local sheetWidth = atlas:getWidth() / tilewidth
     local sheetHeight = atlas:getHeight() / tileheight
@@ -34,11 +17,6 @@ function GenerateQuads(atlas, tilewidth, tileheight)
     return spritesheet
 end
 
---[[
-    Given an "atlas" (a texture with multiple sprites), generate all of the
-    quads for the different tiles therein, divided into tables for each set
-    of tiles, since each color has 6 varieties.
-]]
 function GenerateTileQuads(atlas)
     local tiles = {}
 
@@ -69,10 +47,6 @@ function GenerateTileQuads(atlas)
     return tiles
 end
 
---[[
-    Recursive table printing function.
-    https://coronalabs.com/blog/2014/09/02/tutorial-printing-table-contents/
-]]
 function print_r ( t )
     local print_r_cache={}
     local function sub_print_r(t,indent)
