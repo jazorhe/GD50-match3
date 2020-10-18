@@ -8,7 +8,7 @@ WINDOW_HEIGHT = 720
 VIRTUAL_WIDTH = 512
 VIRTUAL_HEIGHT = 288
 
-DEBUG = true
+DEBUG = false
 
 function love.load()
     -- initialize our nearest-neighbor filter

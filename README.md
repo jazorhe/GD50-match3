@@ -611,11 +611,14 @@ Only allow swapping when it results in a match. If there are no matches availabl
     end
     ```
 
+<br>
 
-Final Submission:
+## Final Submission:
 
-\-- Enter Description Here...
+[![](http://img.youtube.com/vi/J27dzNAF1pc/0.jpg)](http://www.youtube.com/watch?v=J27dzNAF1pc "")
+
 
 ## Helpful Links:
 -   [Lua Knife](https://github.com/airstruck/knife)
 -   [GitHub: Mastering Markdown](https://guides.github.com/features/mastering-markdown/)
+-   [Embed youtube to markdown, GitLab, GitHub](http://embedyoutube.org/)
