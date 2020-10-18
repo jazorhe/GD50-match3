@@ -462,6 +462,9 @@ Only allow swapping when it results in a match. If there are no matches availabl
 
 -   Keep track of variables like self.highlightedTile etc
 -   Swap animation (tween) made longer in order for player to understand what has happened
+-   In order to predict matches, a secondary board is to be created everytime before a board is ready for input
+-   Loop thourgh all possible solutions, if checked, return true
+-   For some reason, the checkboard changes will effect the actual board, so revert any changes before handing back to the player for input
 
 
 <br>  
@@ -574,6 +577,39 @@ Only allow swapping when it results in a match. If there are no matches availabl
     ```
 
 -   Lastly, add menu button at PlayState so people can exit
+
+
+-   **Bonus on top of Bonus:** Dragging (turns out this is totally unecessary, although its useful):
+
+    ```lua
+    if not mouseGrabbed then
+        if love.mouse.isDown(1) then
+            startMouseX, startMouseY = mouseX, mouseY
+            mouseGrabbed = true
+            mouseDragDirection = nil
+        end
+    else
+        if not love.mouse.isDown(1) then
+            finMouseX, finMouseY = mouseX, mouseY
+            mouseGrabbed = false
+
+            disX = finMouseX - startMouseX
+            disY = finMouseY - startMouseY
+
+            if disX > 10 and math.abs(disY/disX) < 1 then
+                mouseDragDirection = 'right'
+            elseif disX < -10 and math.abs(disY/disX) < 1 then
+                mouseDragDirection = 'left'
+            elseif disY > 10 and math.abs(disY/disX) > 1 then
+                mouseDragDirection = 'down'
+            elseif disY < -10 and math.abs(disY/disX) > 1 then
+                mouseDragDirection = 'up'
+            else
+                mouseDragDirection = nil
+            end
+        end
+    end
+    ```
 
 
 Final Submission:

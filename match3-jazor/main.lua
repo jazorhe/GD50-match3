@@ -55,6 +55,8 @@ function love.load()
     mouseX = 0
     mouseY = 0
     mouseMoved = false
+    mouseGrabbed = false
+    mouseDragDirection = nil
 end
 
 
@@ -77,6 +79,34 @@ function love.update(dt)
 
     mouseX, mouseY = push:toGame(love.mouse.getPosition())
 
+    -- if not mouseGrabbed then
+    --     if love.mouse.isDown(1) then
+    --         startMouseX, startMouseY = mouseX, mouseY
+    --         mouseGrabbed = true
+    --         mouseDragDirection = nil
+    --     end
+    -- else
+    --     if not love.mouse.isDown(1) then
+    --         finMouseX, finMouseY = mouseX, mouseY
+    --         mouseGrabbed = false
+    --
+    --         disX = finMouseX - startMouseX
+    --         disY = finMouseY - startMouseY
+    --
+    --         if disX > 10 and math.abs(disY/disX) < 1 then
+    --             mouseDragDirection = 'right'
+    --         elseif disX < -10 and math.abs(disY/disX) < 1 then
+    --             mouseDragDirection = 'left'
+    --         elseif disY > 10 and math.abs(disY/disX) > 1 then
+    --             mouseDragDirection = 'down'
+    --         elseif disY < -10 and math.abs(disY/disX) > 1 then
+    --             mouseDragDirection = 'up'
+    --         else
+    --             mouseDragDirection = nil
+    --         end
+    --     end
+    -- end
+
     if not (mouseX - lastMouseX == 0) or not (mouseY - lastMouseY == 0) then
         mouseMoved = true
     else
@@ -88,6 +118,7 @@ function love.update(dt)
 
     love.keyboard.keysPressed = {}
     love.mouse.buttonsPressed  = {}
+    -- mouseDragDirection = nil
 end
 
 
@@ -97,16 +128,29 @@ function love.draw()
     -- scrolling background drawn behind every state
     love.graphics.draw(gTextures['background'], backgroundX, 0)
 
+    gStateMachine:render()
+
     if DEBUG then
         love.graphics.setFont(gFonts['medium'])
         love.graphics.setColor(99 / 255, 155 / 255, 1, 1)
         love.graphics.print('mouseX: ' .. tostring(mouseX), 8, VIRTUAL_HEIGHT - 32)
-        love.graphics.print('mousey: ' .. tostring(mouseY), 8, VIRTUAL_HEIGHT - 16)
+        love.graphics.print('mouseY: ' .. tostring(mouseY), 8, VIRTUAL_HEIGHT - 16)
+
+        love.graphics.print('startX: ' .. tostring(startMouseX), 150, VIRTUAL_HEIGHT - 32)
+        love.graphics.print('startY: ' .. tostring(startMouseY), 150, VIRTUAL_HEIGHT - 16)
+
+        love.graphics.print('finX: ' .. tostring(finMouseX), 280, VIRTUAL_HEIGHT - 32)
+        love.graphics.print('finY: ' .. tostring(finMouseY), 280, VIRTUAL_HEIGHT - 16)
+
+        love.graphics.print('disX: ' .. tostring(disX), 410, VIRTUAL_HEIGHT - 32)
+        love.graphics.print('disY: ' .. tostring(disY), 410, VIRTUAL_HEIGHT - 16)
+
+        love.graphics.print('mouseDrag: ' .. tostring(mouseDragDirection), 8, VIRTUAL_HEIGHT - 48)
+        love.graphics.print('mouseGrabbed: ' .. tostring(mouseGrabbed), 8, VIRTUAL_HEIGHT - 64)
 
         gStateMachine:debugRender()
     end
 
-    gStateMachine:render()
     push:finish()
 end
 

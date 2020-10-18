@@ -16,11 +16,11 @@ function BeginGameState:enter(def)
     self.level = def.level
 
     if self.level == 1 then
-        useColours = {1, 4, 6, 7, 13, 16}
+        useColours = LEVEL_COLOURS
         useVarieties = {1}
     else
-        useColours = {1, 4, 6, 7, 13, 16}
-        useVarieties = {1, 5, 6}
+        useColours = LEVEL_COLOURS
+        useVarieties = LEVEL_VARIETIES
     end
 
     self.board = Board(VIRTUAL_WIDTH - 272, 16, useColours, useVarieties)

@@ -58,6 +58,10 @@ gFonts = {
 SHINY_RATE = 40
 BASE_SCORE = 20
 
+LEVEL_COLOURS = {1, 4, 6, 7, 13, 16}
+-- LEVEL_COLOURS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+LEVEL_VARIETIES = {1, 5, 6}
+
 function globalMute()
     if love.keyboard.wasPressed('m') then
         triggerMute()

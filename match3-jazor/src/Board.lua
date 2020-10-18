@@ -36,15 +36,6 @@ function Board:initializeTiles()
     end
 end
 
--- function Board:predictMatches()
---     local canMatch = false
---     for y = 1, 8 do
---         for x = 1, 8 do
---
---         end
---     end
--- end
-
 function Board:calculateMatches()
     local matches = {}
 

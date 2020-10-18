@@ -13,7 +13,9 @@ function PlayState:init()
     self.rectHighlighted = false
 
     -- flag to show whether we're able to process input (not swapping or clearing)
-    self.canInput = true
+    self.canInput = false
+    self.canMatch = false
+    self.dragging = false
 
     -- tile we're currently highlighting (preparing to swap)
     self.highlightedTile = nil
@@ -109,6 +111,15 @@ function PlayState:update(dt)
                 self:confirmTile()
             end
 
+            if self.dragging and not love.mouse.isDown(1) then
+                self:confirmTile()
+                self.dragging = false
+            end
+
+            if self.highlightedTile and love.mouse.isDown(1) then
+                self.dragging = true
+            end
+
         end
 
         if mouseX > 20 and mouseX < 182 and mouseY > 136 and mouseY < 136 + 20 then
@@ -129,13 +140,90 @@ function PlayState:update(dt)
             self:confirmTile()
         end
     else
-
+        self.canMatch = false
+        if self:predictMatches() then
+            self.canMatch = true
+            self.canInput = true
+        end
     end
-
-
 
     self.board:update(dt)
     Timer.update(dt)
+end
+
+
+function PlayState:predictMatches()
+
+    self.checkBoard = self.board
+    self.checkBoard.tiles = self.board.tiles
+
+    for y = 1, 8 do
+        for x = 1, 7 do
+
+            local tileA = self.checkBoard.tiles[y][x]
+            local tileB = self.checkBoard.tiles[y][x + 1]
+
+            local tempX = tileA.gridX
+            local tempY = tileA.gridY
+
+            tileA.gridX = tileB.gridX
+            tileA.gridY = tileB.gridY
+            tileB.gridX = tempX
+            tileB.gridY = tempY
+
+            self.checkBoard.tiles[tileA.gridY][tileA.gridX] = tileA
+            self.checkBoard.tiles[tileB.gridY][tileB.gridX] = tileB
+            local foundMatch = self.checkBoard:calculateMatches()
+            tempX = tileA.gridX
+            tempY = tileA.gridY
+            tileA.gridX = tileB.gridX
+            tileA.gridY = tileB.gridY
+            tileB.gridX = tempX
+            tileB.gridY = tempY
+            self.checkBoard.tiles[tileA.gridY][tileA.gridX] = tileA
+            self.checkBoard.tiles[tileB.gridY][tileB.gridX] = tileB
+
+            if foundMatch then
+                return true
+            end
+
+        end
+    end
+
+    for x = 1, 8 do
+        for y = 1, 7 do
+
+            local tileA = self.checkBoard.tiles[y][x]
+            local tileB = self.checkBoard.tiles[y + 1][x]
+
+            local tempX = tileA.gridX
+            local tempY = tileA.gridY
+
+            tileA.gridX = tileB.gridX
+            tileA.gridY = tileB.gridY
+            tileB.gridX = tempX
+            tileB.gridY = tempY
+
+            self.checkBoard.tiles[tileA.gridY][tileA.gridX] = tileA
+            self.checkBoard.tiles[tileB.gridY][tileB.gridX] = tileB
+            local foundMatch = self.checkBoard:calculateMatches()
+            tempX = tileA.gridX
+            tempY = tileA.gridY
+            tileA.gridX = tileB.gridX
+            tileA.gridY = tileB.gridY
+            tileB.gridX = tempX
+            tileB.gridY = tempY
+            self.checkBoard.tiles[tileA.gridY][tileA.gridX] = tileA
+            self.checkBoard.tiles[tileB.gridY][tileB.gridX] = tileB
+
+            if foundMatch then
+                return true
+            end
+        end
+    end
+
+    return false
+
 end
 
 function PlayState:confirmTile()
@@ -174,8 +262,7 @@ function PlayState:swapTiles(x, y)
     newTile.gridY = tempY
 
     -- swap tiles in the tiles table
-    self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
-        self.highlightedTile
+    self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] = self.highlightedTile
 
     self.board.tiles[newTile.gridY][newTile.gridX] = newTile
 
@@ -251,7 +338,8 @@ function PlayState:calculateMatches(x, y)
         else
             self:swapTiles(x, y)
             self.highlightedTile = nil
-            self.swapTimer = 5
+            self.canInput = false
+            self.canMatch = false
         end
     end
 end
