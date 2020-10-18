@@ -121,32 +121,7 @@ function PlayState:update(dt)
                 gSounds['error']:play()
                 self.highlightedTile = nil
             else
-                -- swap grid positions of tiles
-                local tempX = self.highlightedTile.gridX
-                local tempY = self.highlightedTile.gridY
-
-                local newTile = self.board.tiles[y][x]
-
-                self.highlightedTile.gridX = newTile.gridX
-                self.highlightedTile.gridY = newTile.gridY
-                newTile.gridX = tempX
-                newTile.gridY = tempY
-
-                -- swap tiles in the tiles table
-                self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
-                    self.highlightedTile
-
-                self.board.tiles[newTile.gridY][newTile.gridX] = newTile
-
-                -- tween coordinates between the two so they swap
-                Timer.tween(0.1, {
-                    [self.highlightedTile] = {x = newTile.x, y = newTile.y},
-                    [newTile] = {x = self.highlightedTile.x, y = self.highlightedTile.y}
-                })
-                -- once the swap is finished, we can tween falling blocks as needed
-                :finish(function()
-                    self:calculateMatches()
-                end)
+                self:swapTiles(x, y)
             end
         end
     end
@@ -154,19 +129,40 @@ function PlayState:update(dt)
     Timer.update(dt)
 end
 
---[[
-    Calculates whether any matches were found on the board and tweens the needed
-    tiles to their new destinations if so. Also removes tiles from the board that
-    have matched and replaces them with new randomized tiles, deferring most of this
-    to the Board class.
-]]
-function PlayState:calculateMatches()
-    self.highlightedTile = nil
+function PlayState:swapTiles(x, y)
+    local tempX = self.highlightedTile.gridX
+    local tempY = self.highlightedTile.gridY
 
-    -- if we have any matches, remove them and tween the falling blocks that result
+    local newTile = self.board.tiles[y][x]
+
+    self.highlightedTile.gridX = newTile.gridX
+    self.highlightedTile.gridY = newTile.gridY
+    newTile.gridX = tempX
+    newTile.gridY = tempY
+
+    -- swap tiles in the tiles table
+    self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
+        self.highlightedTile
+
+    self.board.tiles[newTile.gridY][newTile.gridX] = newTile
+
+    -- tween coordinates between the two so they swap
+    Timer.tween(0.2, {
+        [self.highlightedTile] = {x = newTile.x, y = newTile.y},
+        [newTile] = {x = self.highlightedTile.x, y = self.highlightedTile.y}
+    })
+    -- once the swap is finished, we can tween falling blocks as needed
+    :finish(function()
+        self:calculateMatches(tempX, tempY)
+    end)
+end
+
+function PlayState:calculateMatches(x, y)
+
     local matches = self.board:calculateMatches()
 
     if matches then
+        self.highlightedTile = nil
         gSounds['match']:stop()
         gSounds['match']:play()
 
@@ -217,9 +213,16 @@ function PlayState:calculateMatches()
         end)
     -- if no matches, we can continue playing
     else
-        self.canInput = true
+        if not self.highlightedTile then
+            self.canInput = true
+        else
+            self:swapTiles(x, y)
+            self.highlightedTile = nil
+            self.swapTimer = 5
+        end
     end
 end
+
 
 function PlayState:render()
     -- render board of tiles
@@ -260,4 +263,5 @@ function PlayState:render()
     love.graphics.printf('Score: ' .. tostring(self.score), 20, 52, 182, 'center')
     love.graphics.printf('Goal : ' .. tostring(self.scoreGoal), 20, 80, 182, 'center')
     love.graphics.printf('Timer: ' .. tostring(self.timer), 20, 108, 182, 'center')
+    love.graphics.printf('swapTimer: ' .. tostring(self.swapTimer), 20, 150, 182, 'center')
 end

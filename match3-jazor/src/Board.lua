@@ -165,11 +165,8 @@ function Board:calculateMatches()
     return #self.matches > 0 and self.matches or false
 end
 
---[[
-    Remove the matches from the Board by just setting the Tile slots within
-    them to nil, then setting self.matches to nil.
-]]
 function Board:removeMatches()
+
     for k, match in pairs(self.matches) do
         for k, tile in pairs(match) do
             if tile.isShiny then
@@ -180,14 +177,10 @@ function Board:removeMatches()
             self.tiles[tile.gridY][tile.gridX] = nil
         end
     end
-
     self.matches = nil
+    
 end
 
---[[
-    Shifts down all of the tiles that now have spaces below them, then returns a table that
-    contains tweening information for these new tiles.
-]]
 function Board:getFallingTiles()
     -- tween table, with tiles as keys and their x and y as the to values
     local tweens = {}
