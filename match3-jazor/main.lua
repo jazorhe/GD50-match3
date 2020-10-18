@@ -58,6 +58,8 @@ function love.load()
     -- set music to loop and start
     gSounds['music']:setLooping(true)
     gSounds['music']:play()
+    gVolume = love.audio.getVolume()
+    gMute = false
 
     -- initialize state machine with all state-returning functions
     gStateMachine = StateMachine {
@@ -115,4 +117,20 @@ function love.draw()
 
     gStateMachine:render()
     push:finish()
+end
+
+
+function globalMute()
+
+    if love.keyboard.wasPressed('m') then
+        if not gMute then
+            gVolume = love.audio.getVolume()
+            love.audio.setVolume(0)
+            gMute = true
+        else
+            love.audio.setVolume(gVolume)
+            gMute = false
+        end
+    end
+
 end

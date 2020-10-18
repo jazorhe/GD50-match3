@@ -74,6 +74,7 @@ function BeginGameState:enter(def)
 end
 
 function BeginGameState:update(dt)
+    globalMute()
     Timer.update(dt)
 end
 

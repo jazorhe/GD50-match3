@@ -76,6 +76,8 @@ function StartState:update(dt)
             gSounds['select']:play()
         end
 
+        globalMute()
+
         -- switch to another state via one of the menu options
         if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
             if self.currentMenuItem == 1 then

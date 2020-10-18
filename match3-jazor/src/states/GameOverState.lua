@@ -12,6 +12,7 @@ function GameOverState:update(dt)
     if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
         gStateMachine:change('start')
     end
+    globalMute()
 end
 
 function GameOverState:render()
