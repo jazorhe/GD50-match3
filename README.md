@@ -619,6 +619,8 @@ Only allow swapping when it results in a match. If there are no matches availabl
 
 
 ## Helpful Links:
+-   [LÖVE2d](https://love2d.org/wiki/love)
+-   [Push Module for Lua](https://github.com/Ulydev/push)
 -   [Lua Knife](https://github.com/airstruck/knife)
 -   [GitHub: Mastering Markdown](https://guides.github.com/features/mastering-markdown/)
 -   [Embed youtube to markdown, GitLab, GitHub](http://embedyoutube.org/)
