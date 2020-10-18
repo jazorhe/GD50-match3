@@ -52,13 +52,13 @@ function PlayState:enter(params)
 end
 
 function PlayState:update(dt)
+
     if love.keyboard.wasPressed('escape') then
         gStateMachine:change('start')
     end
 
     globalMute()
 
-    -- go back to start if time runs out
     if self.timer <= 0 then
         -- clear timers from prior PlayStates
         Timer.clear()
@@ -72,14 +72,10 @@ function PlayState:update(dt)
 
     -- go to next level if we surpass score goal
     if self.score >= self.scoreGoal then
-        -- clear timers from prior PlayStates
-        -- always clear before you change state, else next state's timers
-        -- will also clear!
         Timer.clear()
 
         gSounds['next-level']:play()
 
-        -- change to begin game state with new level (incremented)
         gStateMachine:change('begin-game', {
             level = self.level + 1,
             score = self.score
@@ -129,11 +125,15 @@ function PlayState:update(dt)
             self.currentMenuItem = 0
         end
 
-        -- if we've pressed enter, to select or deselect a tile...
         if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
             self:confirmTile()
         end
+    else
+
     end
+
+
+
     self.board:update(dt)
     Timer.update(dt)
 end

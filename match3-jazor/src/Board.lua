@@ -1,16 +1,3 @@
---[[
-    GD50
-    Match-3 Remake
-
-    -- Board Class --
-
-    Author: Colton Ogden
-    cogden@cs50.harvard.edu
-
-    The Board is our arrangement of Tiles with which we must try to find matching
-    sets of three horizontally or vertically.
-]]
-
 Board = Class{}
 
 function Board:init(x, y, useColours, useVarieties)
@@ -49,11 +36,15 @@ function Board:initializeTiles()
     end
 end
 
---[[
-    Goes left to right, top to bottom in the board, calculating matches by counting consecutive
-    tiles of the same color. Doesn't need to check the last tile in every row or column if the
-    last two haven't been a match.
-]]
+-- function Board:predictMatches()
+--     local canMatch = false
+--     for y = 1, 8 do
+--         for x = 1, 8 do
+--
+--         end
+--     end
+-- end
+
 function Board:calculateMatches()
     local matches = {}
 
