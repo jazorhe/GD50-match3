@@ -54,7 +54,7 @@ function PlayState:update(dt)
     if love.keyboard.wasPressed('escape') then
         love.event.quit()
     end
-    
+
     globalMute()
 
     -- go back to start if time runs out
@@ -145,7 +145,7 @@ function PlayState:update(dt)
                 })
                 -- once the swap is finished, we can tween falling blocks as needed
                 :finish(function()
-                    self:calculateMatches(self.highlightedTile, newTile)
+                    self:calculateMatches()
                 end)
             end
         end
@@ -160,7 +160,7 @@ end
     have matched and replaces them with new randomized tiles, deferring most of this
     to the Board class.
 ]]
-function PlayState:calculateMatches(highlightedTile, newTile)
+function PlayState:calculateMatches()
     self.highlightedTile = nil
 
     -- if we have any matches, remove them and tween the falling blocks that result
@@ -217,32 +217,6 @@ function PlayState:calculateMatches(highlightedTile, newTile)
         end)
     -- if no matches, we can continue playing
     else
-        local tempX = self.highlightedTile.gridX
-        local tempY = self.highlightedTile.gridY
-
-        local newTile = self.board.tiles[y][x]
-
-        self.highlightedTile.gridX = newTile.gridX
-        self.highlightedTile.gridY = newTile.gridY
-        newTile.gridX = tempX
-        newTile.gridY = tempY
-
-        -- swap tiles in the tiles table
-        self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
-            self.highlightedTile
-
-        self.board.tiles[newTile.gridY][newTile.gridX] = newTile
-
-        -- tween coordinates between the two so they swap
-        Timer.tween(0.1, {
-            [self.highlightedTile] = {x = newTile.x, y = newTile.y},
-            [newTile] = {x = self.highlightedTile.x, y = self.highlightedTile.y}
-        })
-        -- once the swap is finished, we can tween falling blocks as needed
-        :finish(function()
-            self:calculateMatches(self.highlightedTile, newTile)
-        end)
-
         self.canInput = true
     end
 end
