@@ -29,7 +29,7 @@ function Tile:init(x, y, color, variety, isShiny)
 
 
     if self.isShiny then
-        self.psystem = love.graphics.newParticleSystem(gTextures['particle'], 5)
+        self.psystem = love.graphics.newParticleSystem(gTextures['particle'], 1)
         self.psystem:setSizes(0.6, 0.8)
         self.psystem:setParticleLifetime(0.2, 0.4)
         self.psystem:setLinearAcceleration(-15, -20, 15, 10)

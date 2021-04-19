@@ -11,10 +11,9 @@
 -   **Procedural Grids**
 -   **Sprite Art and Palettes**
 
-
 ### Goal:
-<img src="img/goal.png" width="700">
 
+<img src="img/goal.png" width="700">
 
 <br>
 <br>
@@ -36,8 +35,8 @@
     -   In love.draw()
         -   Render and print counter variable
 
-
 #### Results:
+
 <img src="img/timer0.png" width="700">
 
 <br>
@@ -70,14 +69,13 @@ Need to include the "Timer" library or module
             -   draw
         -   Loop
 
-
 #### Results:
+
 <img src="img/timer2.png" width="700">
 
 <br>
 
 ### tween0: "The Simple Way"
-
 
 -   Lua Trick: Assign 2 values to two variables using a comma
 
@@ -91,7 +89,6 @@ Need to include the "Timer" library or module
     ```
 
 ### tween1: "A Better Way"
-
 
 -   Knife Library  
 
@@ -123,10 +120,9 @@ Need to include the "Timer" library or module
 
 -   Stress test the game with love.timer.getFPS() and ramp up the number of flappy birds
 
+#### Results:
 
-#### Results:  
 <img src="img/tween1.png" width="700">
-
 
 ### tween2: "The Timer.tween Way"
 
@@ -197,8 +193,8 @@ Need to include the "Timer" library or module
         })
     ```
 
-
 ### chain0: "The Simple (and Hard... and Ugly) Way"
+
 Concept of chaining things together, for instance where you have a cutscene with a character walk from point to point, talk to someone, with dialogue box, then do something else... These are consecutive, predetermind chain of events/actions to be performed by the game.
 
 -   **Pseudocode:**
@@ -212,7 +208,7 @@ Concept of chaining things together, for instance where you have a cutscene with
     -   In love.update(dt)
         -   Increment timer
         -   for each destination in table
-            - if nor reached
+            -   if nor reached
                 -   Use base position for transitional movement (tweening)
                 -   if at max time
                     -   Flag destination reached
@@ -255,10 +251,10 @@ Concept of chaining things together, for instance where you have a cutscene with
     end)
     ```
 
-
 ### swap0: "Just A Board"
 
-#### Sprite Sheet:  
+#### Sprite Sheet:
+
 <img src="img/swap0.png" width="700">
 
 -   Table inside a table inside a table
@@ -266,11 +262,9 @@ Concept of chaining things together, for instance where you have a cutscene with
         -   Colume Table
             -   Property Table
 
-
 ### swap1: "The Static Swap"
 
 -   Swap with middle man
-
 
 ### swap2: "The Tween Swap"
 
@@ -279,14 +273,17 @@ Concept of chaining things together, for instance where you have a cutscene with
 ### match-3
 
 -   Check Matching
+
     -   Iterate Rows to find hrizontal match
     -   Iterate Columns to find vertical match
     -   Add matches into a match table
 
 -   Remove Matches
+
     -   Set matches tiles to nil
 
 -   Move Tiles
+
     -   Start from bottom, if nil look above
     -   If tile fonud, move it down (tween)
     -   Iterate through Columns
@@ -295,13 +292,12 @@ Concept of chaining things together, for instance where you have a cutscene with
     -   Iterate Columns to see how many tiles need to be generated
     -   Tween new tiles to correct positions
 
-
-
 <br>
 
 # Assignment 3
 
 ## Objectives
+
 -   [x] **Materials:** Read and understand all of the Match-3 source code from Lecture 3.
 -   [x] **Time Addition on Matches:** Implement time addition on matches, such that scoring a match extends the timer by 1 second per tile in a match.
 -   [x] **Advanced Levels:** Ensure Level 1 starts just with simple flat blocks (the first of each color in the sprite sheet), with later levels generating the blocks with patterns on them (like the triangle, cross, etc.). These should be worth more points, at your discretion.
@@ -309,14 +305,13 @@ Concept of chaining things together, for instance where you have a cutscene with
 -   [x] **Swap On Matches Only:** Only allow swapping when it results in a match. If there are no matches available to perform, reset the board.
 -   [x] **Mouse Control (Optional):** Implement matching using the mouse. (Hint: you’ll need push:toGame(x,y); see the push library’s documentation [here](https://github.com/Ulydev/push) for details!
 
-
 <br>   
 
 ### Time Addition on Matches
+
 Implement time addition on matches, such that scoring a match extends the timer by 1 second per tile in a match. This one will probably be the easiest! Currently, there’s code that calculates the amount of points you’ll want to award the player when it calculates any matches in PlayState:calculateMatches, so start there!
 
-
-- Simple
+-   Simple
 
     ```lua
     function PlayState:calculateMatches(x, y)
@@ -364,6 +359,7 @@ Implement time addition on matches, such that scoring a match extends the timer 
 <br>
 
 ### Advanced Levels
+
 Ensure Level 1 starts just with simple flat blocks (the first of each color in the sprite sheet), with later levels generating the blocks with patterns on them (like the triangle, cross, etc.). These should be worth more points, at your discretion. This one will be a little trickier than the last step (but only slightly); right now, random colors and varieties are chosen in Board:initializeTiles, but perhaps we could pass in the level variable from the PlayState when a Board is created (specifically in PlayState:enter), and then let that influence what variety is chosen?
 
 -   Decrease total number of colours appears
@@ -393,6 +389,7 @@ Ensure Level 1 starts just with simple flat blocks (the first of each color in t
 <br>  
 
 ### The Shiny One
+
 Create random shiny versions of blocks that will destroy an entire row on match, granting points for each block in the row. This one will require a little more work! We’ll need to modify the Tile class most likely to hold some kind of flag to let us know whether it’s shiny and then test for its presence in Board:calculateMatches!
 
 -   Add isShiny property
@@ -421,12 +418,13 @@ Create random shiny versions of blocks that will destroy an entire row on match,
 <br>  
 
 ### Swap On Matches Only
+
 Only allow swapping when it results in a match. If there are no matches available to perform, reset the board. There are multiple ways to try and tackle this problem; choose whatever way you think is best! The simplest is probably just to try and test for Board:calculateMatches after a swap and just revert back if there is no match! The harder part is ensuring that potential matches exist; for this, the simplest way is most likely to pretend swap everything left, right, up, and down, using essentially the same reverting code as just above! However, be mindful that the current implementation uses all of the blocks in the sprite sheet, which mathematically makes it highly unlikely we’ll get a board with any viable matches in the first place; in order to fix this, be sure to instead only choose a subset of tile colors to spawn in the Board (8 seems like a good number, though tweak to taste!) before implementing this algorithm!
 
 -   Make swapTiles() a function of PlayState
 -   At the end of swapTiles(), run PlayState:calculateMatches()
 -   When no match is found, run swapTiles() again, this time revert the swapping process
--    In order to revert the swapping process, the tempX and tempY used previously can be kept and passed in
+-   In order to revert the swapping process, the tempX and tempY used previously can be kept and passed in
 
     ```lua
     function PlayState:swapTiles(x, y)
@@ -466,12 +464,11 @@ Only allow swapping when it results in a match. If there are no matches availabl
 -   Loop thourgh all possible solutions, if checked, return true
 -   For some reason, the checkboard changes will effect the actual board, so revert any changes before handing back to the player for input
 
-
 <br>  
 
 ### Mouse Control
-(Optional) Implement matching using the mouse. (Hint: you’ll need push:toGame(x,y); see the push library’s documentation here for details! This one’s fairly self-explanatory; feel free to implement click-based, drag-based, or both for your application! This one’s only if you’re feeling up for a bonus challenge :) Have fun!
 
+(Optional) Implement matching using the mouse. (Hint: you’ll need push:toGame(x,y); see the push library’s documentation here for details! This one’s fairly self-explanatory; feel free to implement click-based, drag-based, or both for your application! This one’s only if you’re feeling up for a bonus challenge :) Have fun!
 
 -   I have tried that on flappy bird, but without `push:toGame(x,y)`
 -   Debug tool (also check is mouse moved):
@@ -496,6 +493,7 @@ Only allow swapping when it results in a match. If there are no matches availabl
     if mouseX > VIRTUAL_WIDTH / 2 - 50 and mouseX < VIRTUAL_WIDTH / 2 + 50 then
 
         if mouseY > VIRTUAL_HEIGHT / 2 + 20 and mouseY < VIRTUAL_HEIGHT / 2 + 20 + 16 then
+    ```
 
 
             if mouseMoved and self.currentMenuItem == 2  then
@@ -615,10 +613,10 @@ Only allow swapping when it results in a match. If there are no matches availabl
 
 ## Final Submission:
 
-[![](http://img.youtube.com/vi/J27dzNAF1pc/0.jpg)](http://www.youtube.com/watch?v=J27dzNAF1pc "")
-
+[![](http://img.youtube.com/vi/J27dzNAF1pc/0.jpg)](http://www.youtube.com/watch?v=J27dzNAF1pc)
 
 ## Helpful Links:
+
 -   [LÖVE2d](https://love2d.org/wiki/love)
 -   [Push Module for Lua](https://github.com/Ulydev/push)
 -   [Lua Knife](https://github.com/airstruck/knife)

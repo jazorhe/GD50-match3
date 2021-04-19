@@ -392,7 +392,6 @@ function PlayState:render()
         love.graphics.setColor(48 / 255, 96 / 255, 130 / 255, 1)
     end
     love.graphics.printf('Menu', 20, 136, 182, 'center')
-
 end
 
 function PlayState:debugRender()
